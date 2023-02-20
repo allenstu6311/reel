@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            user-select: none;
+        }
+
+        .bgimg {
+            width: 100vw;
+            height: 100vh;
+            position: fixed;
+            margin: auto;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background-repeat: repeat;
+        }
+
+        .bgimg img {
+            width: 100%;
+            height: 100%;
+            opacity: .4;
+        }
+
+        #app {
+            margin: 100px;
+            text-align: center;
+        }
+
+        .progress-bar {
+            width: 400px;
+            height: 30px;
+
+            position: relative;
+            margin: auto;
+        }
+
+        .progress-bar img {
+            width: 100%;
+            height: 100%;
+        }
+
+        .control {
+            width: 30px;
+            height: 120%;
+            background-color: rgba(220, 220, 220, 0.635);
+            position: absolute;
+            top: -10px;
+            padding: 10px 0;
+        }
+
+        .item {
+            width: 80%;
+            height: 300px;
+            border: 1px solid black;
+            overflow: hidden;
+            position: relative;
+            margin: auto;
+            margin-bottom: 40px;
+        }
+
+        .item img {
+            width: 201%;
+            height: 100%;
+            position: absolute;
+        }
+    </style>
+</head>
+
+<body>
+    <!--   背景 -->
+    <div class="bgimg">
+        <img src="http://img1.xixik.net/cimg/099/xixik_2c2ebabc67f0babc.jpg" alt="">
+    </div>
+    <div id="app">
+        <!-- 圖片 -->
+        <div class="item" ref="item">
+            <img src="https://pic4.zhimg.com/80/v2-6fe543cbf70ac942b59187cc6e38fb8f_1440w.webp" alt=""
+                :style="{left:-imgMove+'px'}">
+        </div>
+        <!-- 控制區 -->
+        <div class="progress-bar" ref="bar">
+            <img src="https://pic4.zhimg.com/80/v2-6fe543cbf70ac942b59187cc6e38fb8f_1440w.webp" alt="">
+            <div class="control" @mousedown="focus" :style="{left:controlMove+'px'}" ref="control">
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/vue@next"></script>
+    <script>
+        Vue.createApp({
+            data() {
+                return {
+                    controlMove: 0,
+                    clickX: 0,
+                    imgMove: 0
+                }
+            },
+            methods: {
+                //點擊控制器
+                focus(e) {
+                    // 啟動滑鼠事件
+                    document.addEventListener("mousemove", this.move)
+                    document.addEventListener("mouseup", this.blur)
+                    //紀錄點擊位置
+                    this.clickX = e.clientX - this.$refs.control.offsetLeft;
+                },
+                move(e) {
+                    //記錄控制條寬度
+                    var width = this.$refs.bar.offsetWidth - this.$refs.control.offsetWidth
+                    //卷軸移動距離
+                    var moveLength = e.clientX - this.clickX;
+                    //計算圖片與卷軸移動的比例
+                    var imgItem = this.$refs.item.offsetWidth / (this.$refs.bar.offsetWidth - this.$refs.control.offsetWidth)
+
+                    //s
+                    if (moveLength <= 0) moveLength = 0
+                    if (moveLength >= width) moveLength = width
+
+                    //控制器移動的距離
+                    this.controlMove = moveLength
+                    //按比例計算圖片移動的距離
+                    this.imgMove = moveLength * imgItem
+
+                },
+                blur() {
+                    //關閉事件
+                    document.removeEventListener("mousemove", this.move)
+                    document.removeEventListener("mousedown", this.focus)
+                }
+            },
+        }).mount("#app")
+    </script>
+
+</body>
+
+</html>
